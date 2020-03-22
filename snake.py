@@ -134,7 +134,7 @@ def game_loop(snake_speed):
                         game_close = True
                         game_over = False
                     if event.key == pygame.K_c:
-                        game_loop(snake_speed)
+                        game_intro()
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
