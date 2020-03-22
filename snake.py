@@ -1,5 +1,6 @@
 import pygame
 import random
+import ptext
 
 pygame.init()
 
@@ -19,7 +20,6 @@ pygame.display.set_caption('Snake Game by Justyna')
 clock = pygame.time.Clock()
 
 snake_block = 20
-snake_speed = 10
 
 rows = window_height // snake_block
 
@@ -27,7 +27,7 @@ font_style = pygame.font.SysFont("Arial", 25)
 
 
 def draw_grid(width, surface, rows):
-    gap_size = width // rows  # Gives us the distance between the lines
+    gap_size = width // rows
 
     x = 0
     y = 0
@@ -57,10 +57,47 @@ def message(msg, color):
 def draw_food():
     foodx = round(random.randrange(0, window_width - snake_block) / snake_block) * snake_block
     foody = round(random.randrange(0, window_width - snake_block) / snake_block) * snake_block
-    return (foodx, foody)
+    return foodx, foody
 
 
-def game_loop():
+def game_intro():
+    intro = True
+
+    while intro:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit()
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_q:
+                    pygame.quit()
+                    quit()
+                if event.key == pygame.K_s:
+                    snake_speed = 5
+                    game_loop(snake_speed)
+                if event.key == pygame.K_m:
+                    snake_speed = 10
+                    game_loop(snake_speed)
+                if event.key == pygame.K_f:
+                    snake_speed = 15
+                    game_loop(snake_speed)
+
+        window.fill(blue)
+        ptext.draw("Python-Snake", (window_width/3, window_height/20), sysfontname='Arial', fontsize=25, bold=True,
+                   color=black)
+        ptext.draw("""Options (click on your keyboard):
+                    
+                    s - slow
+                    m - medium
+                    f - fast
+                    q - quit
+                    """, (window_width/12, window_height/4), sysfontname='Arial', fontsize=25)
+
+        pygame.display.update()
+        clock.tick(15)
+
+
+def game_loop(snake_speed):
     game_close = False
     game_over = False
 
@@ -79,24 +116,30 @@ def game_loop():
 
         while game_over:
             window.fill(blue)
-            message("You Lost! C-play again; Q-quit", red)
+            ptext.draw("You lost!", (window_width / 3, window_height / 5), color=red, sysfontname='Arial', fontsize=25,
+                       bold=True)
+            ptext.draw("""Options (click on your keyboard):
+            c - try again
+            q - quit
+                        """, (window_width / 12, window_height / 3), sysfontname='Arial', fontsize=25)
             player_score(length_of_snake - 1)
             pygame.display.update()
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    game_close = True
-                    game_over = False
+                    pygame.quit()
+                    quit()
                 elif event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_q:
                         game_close = True
                         game_over = False
                     if event.key == pygame.K_c:
-                        game_loop()
+                        game_loop(snake_speed)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                game_close = True
+                pygame.quit()
+                quit()
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_LEFT:
                     x1_change = -snake_block
@@ -140,8 +183,5 @@ def game_loop():
 
         clock.tick(snake_speed)
 
-    pygame.quit()
-    quit()
 
-
-game_loop()
+game_intro()
